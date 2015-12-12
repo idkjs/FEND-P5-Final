@@ -10,7 +10,7 @@
       <div id="map"></div>
       <input type="search" placeholder="keyword search..." data-bind="textInput: userInput, event: {keyup: search}"></input>
             <ul id="list-view" data-bind="foreach:placeList"> 
-                <button><span data-bind="text: locationName, click: clickPlace($data.marker())"></span></button>
+                <button><span data-bind="text: locationName"></span></button>
             </ul>
         <script type='text/javascript' src='js/lib/knockout-3.4.0.js'></script>
         <script src="js/app.js"></script>

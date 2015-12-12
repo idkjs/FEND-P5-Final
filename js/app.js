@@ -59,8 +59,6 @@ var viewModel = function () {
   // the map it was referring to was not defined inside the vm(i think). I put it
   // in here and changed the map calls to self.googleMap and it worked. Is this a closure issue?
   // find knockoutjs closure docs because dont feel like i understand what I did totally.
-  var clickPlace = document.getElementById('clickPlace');
-  clickPlace.addListener('click', toggleBounce);
 
   self.placeArray.forEach(function(place) {
     place.marker = new google.maps.Marker({
@@ -95,9 +93,9 @@ var viewModel = function () {
   self.placeArray.forEach(function(place)  {
     self.placeList.push(place);
   });
-  // function clickPlace(latLng) {
-  //   google.maps.event.trigger
-  // }
+  this.clickPlace = function(latLng) {
+    google.maps.event.trigger(markersArray.latLng, 'click');
+  }
   // this.bounceMarker = function(place) {
   //   var marker = getMar
   // }
