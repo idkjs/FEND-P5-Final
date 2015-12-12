@@ -1,9 +1,10 @@
 var vm;
-var map = document.getElementById ('map')
+var map = document.getElementById ('map');
+var markersArray =[];
 
 var localPlaces = [
   {
-    locationName: 'MATELEC',
+    locationName: 'MATELEC S.A Electromenager',
     latLng: {lat: 18.515732, lng: -72.293135},
   },
   
@@ -28,12 +29,11 @@ var localPlaces = [
   },
   
   {
-    locationName: 'Maison Acra',
+    locationName: 'Maison Acra - Petion-Ville',
     latLng: {lat: 18.5127402, lng: -72.2886953},
   }
 ];
 
-var markers = [];
 var viewModel = function () {
       
   var self = this;
@@ -54,17 +54,40 @@ var viewModel = function () {
   localPlaces.forEach(function(place) {
     self.placeArray.push(new Place(place));
   });
+  // Previously had this place.marker code set as a createMarker function outside of this function and tried to 
+  // call it inside of self.placeArray. function. It did not work because of
+  // the map it was referring to was not defined inside the vm(i think). I put it
+  // in here and changed the map calls to self.googleMap and it worked. Is this a closure issue?
+  // find knockoutjs closure docs because dont feel like i understand what I did totally.
+  var clickPlace = document.getElementById('clickPlace');
+  clickPlace.addListener('click', toggleBounce);
 
   self.placeArray.forEach(function(place) {
-    var markerOptions = {
+    place.marker = new google.maps.Marker({
       map: self.googleMap,
-      position: place.latLng
+      locationName: place.locationName,
+      position: place.latLng,
+      animation: google.maps.Animation.DROP
+    });
+
+    place.marker.addListener('click', toggleBounce);
+    function toggleBounce() {
+      if (place.marker.getAnimation() !== null) {
+      place.marker.setAnimation(null);
+      } else {
+      place.marker.setAnimation(google.maps.Animation.BOUNCE);
+      }
     }
-
-    place.marker = new google.maps.Marker(markerOptions);
-
-    google.maps.event.trigger(place.marker, 'click');
-
+     
+    var contentString = '<div>' + place.locationName + '</div>';
+    google.maps.event.addListener(place.marker, 'click', function() {      
+      infowindow.setContent(contentString);      
+      infowindow.open(self.googleMap, this);
+      place.marker.setAnimation(google.maps.Animation.BOUNCE);
+      setTimeout(function(){place.marker.setAnimation(null);}, 1450);
+    });
+    markersArray.push(place.marker);
+    return place.marker;
   });
 
   self.placeList = ko.observableArray();
@@ -72,6 +95,12 @@ var viewModel = function () {
   self.placeArray.forEach(function(place)  {
     self.placeList.push(place);
   });
+  // function clickPlace(latLng) {
+  //   google.maps.event.trigger
+  // }
+  // this.bounceMarker = function(place) {
+  //   var marker = getMar
+  // }
   // // Create a marker for each Place via the google maps api. The call takes a latlng and map id property at least.
   // // https://developers.google.com/maps/documentation/javascript/markers
 
@@ -104,21 +133,8 @@ var viewModel = function () {
     this.locationName = data.locationName;
     this.latLng = data.latLng;
     this.contentString = '<div><strong>' + this.locationName + '</strong></div>';
-  // setting this market to null here. When we create a marker later, 
-  // we will save it to the this.marker variable for each Place.
   }
-}
-// // Sets the map on all markers in the array.
-//   function setMapOnAll(map) {
-//     markers.forEach(function(marker) {
-//       marker.setMap(map);
-//     });
-//   }
-
-//   function clearMarkers() {
-//     setMapOnAll(null);
-//   }
-
+};
 
 vm = new viewModel();
 

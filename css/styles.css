@@ -22,7 +22,7 @@ input {
   font-size: 20px;
 }
 
-#list-view {
+#list-view, ul {
   position: fixed;
   top: 20px;
   right: 20px;
@@ -36,4 +36,6 @@ li {
   margin-left: 20px;
   padding: 2px 0;
   font: 12px sans-serif;
+  width: 100px;
+  height: 31px;
 }
