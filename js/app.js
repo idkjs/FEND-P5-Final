@@ -92,13 +92,9 @@ var viewModel = function () {
 
   self.placeArray.forEach(function(place)  {
     self.placeList.push(place);
+    console.log(self.placeList);
   });
-  this.clickPlace = function(latLng) {
-    google.maps.event.trigger(markersArray.latLng, 'click');
-  }
-  // this.bounceMarker = function(place) {
-  //   var marker = getMar
-  // }
+
   // // Create a marker for each Place via the google maps api. The call takes a latlng and map id property at least.
   // // https://developers.google.com/maps/documentation/javascript/markers
 
@@ -132,6 +128,12 @@ var viewModel = function () {
     this.latLng = data.latLng;
     this.contentString = '<div><strong>' + this.locationName + '</strong></div>';
   }
+
+  bounceUp = function(place) {
+  google.maps.event.trigger(place.marker, 'click');
+  console.log(place.marker);
+  }
+
 };
 
 vm = new viewModel();
