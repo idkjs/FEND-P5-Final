@@ -54,6 +54,12 @@ var viewModel = function () {
   localPlaces.forEach(function(place) {
     self.placeArray.push(new Place(place));
   });
+
+  var ref = new Firebase("https://crackling-fire-1105.firebaseio.com/business");
+  ref.orderByChild("city").equalTo("Pétion-Ville").on("child_added", function(snapshot) {
+  console.log(snapshot.key());
+  }); 
+  
   // Previously had this place.marker code set as a createMarker function outside of this function and tried to 
   // call it inside of self.placeArray. function. It did not work because of
   // the map it was referring to was not defined inside the vm(i think). I put it
@@ -122,6 +128,7 @@ var viewModel = function () {
     });
       
   };
+
 
   function Place(data) {
     this.locationName = data.locationName;
