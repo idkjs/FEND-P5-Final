@@ -4,37 +4,39 @@ var markersArray =[];
 
 var localPlaces = [
   {
-    locationName: 'MATELEC S.A Electromenager',
+    name: 'MATELEC S.A Electromenager',
     latLng: {lat: 18.515732, lng: -72.293135},
   },
   
   {
-    locationName: 'Thompson Electronics S.A.',
+    name: 'Thompson Electronics S.A.',
     latLng: {lat: 18.5140218, lng: -72.2919172}
   },
   
   {
-    locationName: 'Pages Jaunes Haiti',
+    name: 'Pages Jaunes Haiti',
     latLng: {lat: 18.511007, lng: -72.2911917}
   },
 
   {
-    locationName: 'Marie de Petion-Ville',
+    name: 'Marie de Petion-Ville',
     latLng: {lat: 18.5098571, lng: -72.2882233},
   },
   
   {
-    locationName: 'La Lorraine Boutique Hotel',
+    name: 'La Lorraine Boutique Hotel',
     latLng: {lat: 18.5123482, lng: -72.2918561}
   },
   
   {
-    locationName: 'Maison Acra - Petion-Ville',
+    name: 'Maison Acra - Petion-Ville',
     latLng: {lat: 18.5127402, lng: -72.2886953},
   }
 ];
 
+
 var viewModel = function () {
+
       
   var self = this;
 
@@ -48,6 +50,23 @@ var viewModel = function () {
 
   infowindow = new google.maps.InfoWindow();
 
+  // // custom data object to make objects out of data in localPlaces and add data to it.
+  // self.placeArray = [];
+
+  // localPlaces.forEach(function(place) {
+  //   self.placeArray.push(new Place(place));
+  // });
+
+//   get data from Pages Jaunes Haiti database, push to localPlaces []
+  var ref = new Firebase("https://crackling-fire-1105.firebaseio.com/business");
+  ref.orderByChild("city").equalTo("Pétion-Ville").on("child_added", function(snapshot) {
+// Attach an asynchronous callback to read the data at our posts reference
+    console.log(snapshot.val());
+    localPlaces.push(snapshot.val());
+    }, function (errorObject) {
+    console.log("The read failed: " + errorObject.code);
+  });
+
   // custom data object to make objects out of data in localPlaces and add data to it.
   self.placeArray = [];
 
@@ -55,11 +74,7 @@ var viewModel = function () {
     self.placeArray.push(new Place(place));
   });
 
-  var ref = new Firebase("https://crackling-fire-1105.firebaseio.com/business");
-  ref.orderByChild("city").equalTo("Pétion-Ville").on("child_added", function(snapshot) {
-  console.log(snapshot.key());
-  }); 
-  
+   // curl 'https://docs-examples.firebaseio.com/rest/saving-data/fireblog/posts.json?print=pretty'
   // Previously had this place.marker code set as a createMarker function outside of this function and tried to 
   // call it inside of self.placeArray. function. It did not work because of
   // the map it was referring to was not defined inside the vm(i think). I put it
@@ -69,7 +84,7 @@ var viewModel = function () {
   self.placeArray.forEach(function(place) {
     place.marker = new google.maps.Marker({
       map: self.googleMap,
-      locationName: place.locationName,
+      name: place.name,
       position: place.latLng,
       animation: google.maps.Animation.DROP
     });
@@ -83,7 +98,7 @@ var viewModel = function () {
       }
     }
      
-    var contentString = '<div>' + place.locationName + '</div>';
+    var contentString = '<div>' + place.name + '</div>';
     google.maps.event.addListener(place.marker, 'click', function() {      
       infowindow.setContent(contentString);      
       infowindow.open(self.googleMap, this);
@@ -118,7 +133,7 @@ var viewModel = function () {
     self.placeArray.forEach(function(place) {
       place.marker.setVisible(false);
     
-      if(place.locationName.toLowerCase().indexOf(searchInput) >= 0) {
+      if(place.name.toLowerCase().indexOf(searchInput) >= 0) {
         self.placeList.push(place);
       }
     });
@@ -128,12 +143,16 @@ var viewModel = function () {
     });
       
   };
-
+ function firePlace(data) {
+    this.name = data.snapshot.key();
+    this.address = data.snapshot.val(address);
+    this.contentString = '<div><strong>' + this.name + '</strong></div>';
+ }
 
   function Place(data) {
-    this.locationName = data.locationName;
+    this.name = data.name;
     this.latLng = data.latLng;
-    this.contentString = '<div><strong>' + this.locationName + '</strong></div>';
+    this.contentString = '<div><strong>' + this.name + '</strong></div>';
   }
 
   bounceUp = function(place) {

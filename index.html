@@ -10,7 +10,7 @@
       <div id="map"></div>
       <input type="search" placeholder="keyword search..." data-bind="textInput: userInput, event: {keyup: search}"></input>
             <ul id="list-view" data-bind="foreach:placeList"> 
-                <button><span data-bind="text: locationName, click: bounceUp"></span></button>
+                <button><span data-bind="text: name, click: bounceUp"></span></button>
             </ul>
         <script type='text/javascript' src='js/lib/knockout-3.4.0.js'></script>
         <script type='text/javascript' src='js/lib/firebase.js'></script>
