@@ -1,6 +1,5 @@
 var vm;
 var map = document.getElementById ('map');
-var markersArray =[];
 
 var localPlaces = [
   {
@@ -39,7 +38,12 @@ var viewModel = function () {
 
       
   var self = this;
-
+  
+  // custom data object to make objects out of data in localPlaces and add data to it.
+  self.placeArray = [];
+  self.markersArray =[];
+  
+  self.placeList = ko.observableArray();
   // build google map object, store in reference var
   // var pv = {lat: 18.5128958, lng: -72.2939841};
 
@@ -50,39 +54,39 @@ var viewModel = function () {
 
   infowindow = new google.maps.InfoWindow();
 
-  // // custom data object to make objects out of data in localPlaces and add data to it.
-  // self.placeArray = [];
+  // get data from Pages Jaunes Haiti database, push to localPlaces []
+  var ref = new Firebase("https://crackling-fire-1105.firebaseio.com/business");
+  ref.orderByChild("city").equalTo("Pétion-Ville").on("child_added", function(snapshot) {
+      if (snapshot.val().hasOwnProperty('name') && snapshot.val().hasOwnProperty('latitude')) {
+           var place = { accountid: snapshot.val().accountid, name: snapshot.val().name,
+                   latLng: {lat: snapshot.val().latitude, lng: snapshot.val().longitude},
+                 };
+            
+           self.placeList.push(new Place(place));
+           Marker(place);
+           self.placeList.push
+           // console.log(place.marker);
+           self.markersArray.push(place.marker)
+   }
+  // Attach an asynchronous callback to read the data at our posts reference
+
+    }, function (errorObject) {
+    console.log("The read failed: " + errorObject.code);
+  });
 
   // localPlaces.forEach(function(place) {
   //   self.placeArray.push(new Place(place));
   // });
 
-//   get data from Pages Jaunes Haiti database, push to localPlaces []
-  var ref = new Firebase("https://crackling-fire-1105.firebaseio.com/business");
-  ref.orderByChild("city").equalTo("Pétion-Ville").on("child_added", function(snapshot) {
-// Attach an asynchronous callback to read the data at our posts reference
-    console.log(snapshot.val());
-    localPlaces.push(snapshot.val());
-    }, function (errorObject) {
-    console.log("The read failed: " + errorObject.code);
-  });
-
-  // custom data object to make objects out of data in localPlaces and add data to it.
-  self.placeArray = [];
-
-  localPlaces.forEach(function(place) {
-    self.placeArray.push(new Place(place));
-  });
-
-   // curl 'https://docs-examples.firebaseio.com/rest/saving-data/fireblog/posts.json?print=pretty'
   // Previously had this place.marker code set as a createMarker function outside of this function and tried to 
   // call it inside of self.placeArray. function. It did not work because of
   // the map it was referring to was not defined inside the vm(i think). I put it
   // in here and changed the map calls to self.googleMap and it worked. Is this a closure issue?
   // find knockoutjs closure docs because dont feel like i understand what I did totally.
 
-  self.placeArray.forEach(function(place) {
+ function Marker(place) {
     place.marker = new google.maps.Marker({
+      accountid: place.accountid,
       map: self.googleMap,
       name: place.name,
       position: place.latLng,
@@ -105,11 +109,11 @@ var viewModel = function () {
       place.marker.setAnimation(google.maps.Animation.BOUNCE);
       setTimeout(function(){place.marker.setAnimation(null);}, 1450);
     });
-    markersArray.push(place.marker);
     return place.marker;
-  });
+    markersArray.push(place.marker);
+  };
 
-  self.placeList = ko.observableArray();
+  // self.placeList = ko.observableArray();
 
   self.placeArray.forEach(function(place)  {
     self.placeList.push(place);
@@ -143,21 +147,25 @@ var viewModel = function () {
     });
       
   };
- function firePlace(data) {
-    this.name = data.snapshot.key();
-    this.address = data.snapshot.val(address);
-    this.contentString = '<div><strong>' + this.name + '</strong></div>';
- }
 
   function Place(data) {
+    this.accountid = data.accountid;
     this.name = data.name;
     this.latLng = data.latLng;
     this.contentString = '<div><strong>' + this.name + '</strong></div>';
   }
 
   bounceUp = function(place) {
-  google.maps.event.trigger(place.marker, 'click');
-  console.log(place.marker);
+    var i;
+    for (i = 0; i < self.markersArray.length; i++) {
+    var marker = self.markersArray[i];
+    if (place.accountid === marker.accountid) {break;} {
+      google.maps.event.trigger(marker, 'click');
+      }
+      console.log(marker);
+      console.log(place);
+
+    }
   }
 
 };
