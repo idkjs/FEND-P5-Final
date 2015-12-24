@@ -8,13 +8,14 @@ var viewModel = function () {
       
   var self = this;
 
+  // non-observable array to show objects coming from Firebase DB.
   self.placeArray = [];
   
   // observable data object to make objects show object coming from Firebase.
   
   self.placeList = ko.observableArray();
 
-  // build google map object
+  // build google map object. infowindow is function that shows data you want shown when clicking a map marker.
 
   self.googleMap = new google.maps.Map(document.getElementById('map'), {
     center: {lat: 18.5128958, lng: -72.2939841},
@@ -23,7 +24,7 @@ var viewModel = function () {
 
   infowindow = new google.maps.InfoWindow();
 
-  // get data from Pages Jaunes Haiti database, push to localPlaces []
+  // get data from Pages Jaunes Haiti database, push to placeArray []
   var ref = new Firebase("https://crackling-fire-1105.firebaseio.com/business");
 
   // get data from firebase.
@@ -45,11 +46,9 @@ var viewModel = function () {
   }
   searchbiz();
   
-  // Previously had this place.marker code set as a createMarker function outside of this function and tried to 
-  // call it inside of self.placeArray. function. It did not work because of
-  // the map it was referring to was not defined inside the vm(i think). I put it
-  // in here and changed the map calls to self.googleMap and it worked. Is this a closure issue?
-  // find knockoutjs closure docs because dont feel like i understand what I did totally.
+  // Create a marker for each Place via the google maps api. The call takes a latlng and map id property at least.
+  // Adds click event listener, animation and infowindow data
+  // https://developers.google.com/maps/documentation/javascript/markers
 
  function Marker(place) {
     place.marker = new google.maps.Marker({
@@ -79,16 +78,6 @@ var viewModel = function () {
     return place.marker;
   };
 
-  // self.placeList = ko.observableArray();
-
-  // self.placeArray.forEach(function(place)  {
-  //   self.placeList.push(place);
-  //   console.log(self.placeList);
-  // });
-
-  // // Create a marker for each Place via the google maps api. The call takes a latlng and map id property at least.
-  // // https://developers.google.com/maps/documentation/javascript/markers
-
   self.userInput = ko.observable(''); 
 
   self.search = function() {
@@ -110,8 +99,7 @@ var viewModel = function () {
      
     self.placeList().forEach(function(place) {
       place.marker.setVisible(true);
-    });
-      
+    });     
   };
 
   function Place(data) {
@@ -125,20 +113,7 @@ var viewModel = function () {
   bounceUp = function(place) {
       google.maps.event.trigger(place.marker, 'click');
       console.log(place.marker);
-   }
-  // bounceUp = function(place) {
-  //   var i;
-  //   for (i = 0; i < self.markersArray.length; i++) {
-  //   var marker = self.markersArray[i];
-  //   if (place.accountid === marker.accountid) {
-  //     google.maps.event.trigger(marker, 'click');
-  //     }
-  //     console.log(marker);
-  //     console.log(place);
-
-  //   }
-  // }
-
+  }
 };
 
 vm = new viewModel();
