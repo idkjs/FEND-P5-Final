@@ -1,28 +1,14 @@
 var vm;
-var map = document.getElementById ('map');
-
-
 
 var viewModel = function () {
-
-      
+  
   var self = this;
-
+  var map = this.map;
   // non-observable array to show objects coming from Firebase DB.
   self.placeArray = [];
   
-  // observable data object to make objects show object coming from Firebase.
-  
+  // observable data object to make objects show object coming from Firebase 
   self.placeList = ko.observableArray();
-
-  // build google map object. infowindow is function that shows data you want shown when clicking a map marker.
-
-  self.googleMap = new google.maps.Map(document.getElementById('map'), {
-    center: {lat: 18.5128958, lng: -72.2939841},
-    zoom: 15
-    });
-
-  infowindow = new google.maps.InfoWindow();
 
   // get data from Pages Jaunes Haiti database, push to placeArray []
   var ref = new Firebase("https://crackling-fire-1105.firebaseio.com/business");
@@ -51,9 +37,10 @@ var viewModel = function () {
   // https://developers.google.com/maps/documentation/javascript/markers
 
  function Marker(place) {
+    var map = document.getElementById ('map');
     place.marker = new google.maps.Marker({
       accountid: place.accountid,
-      map: self.googleMap,
+      setMap: map,
       name: place.name,
       position: place.latLng,
       animation: google.maps.Animation.DROP
@@ -71,7 +58,7 @@ var viewModel = function () {
     var contentString = '<div>' + place.name + '</div>';
     google.maps.event.addListener(place.marker, 'click', function() {      
       infowindow.setContent(contentString);      
-      infowindow.open(self.googleMap, this);
+      infowindow.open(self.mapCanvas, this);
       place.marker.setAnimation(google.maps.Animation.BOUNCE);
       setTimeout(function(){place.marker.setAnimation(null);}, 1450);
     });

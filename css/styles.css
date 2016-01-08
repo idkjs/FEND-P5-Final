@@ -11,20 +11,23 @@ body {
 
 #map {
   height: 100%;
+  width: 80%;
+  right: 20px;
 }
 
-input {
-  position: fixed;
+#test-input {
+  top: 40px;
   right: 20px;
   bottom: 30%;
   height: 40px;
   width: 200px;
   font-size: 20px;
 }
+/* # is an id selector, . is a class selector*/
 
-#list-view, ul {
-  position: fixed;
-  top: 20px;
+#list-view {
+  /*position: fixed;*/
+  top: 0px;
   right: 20px;
   width: 100px;
   background-color: #fff;
@@ -32,6 +35,17 @@ input {
   padding: 0;
 }
 
+/*.controls {
+    margin-top: 16px;
+    border: 1px solid transparent;
+    border-radius: 2px 0 0 2px;
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    height: 32px;
+    outline: none;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+*/
 li {
   margin-left: 20px;
   padding: 2px 0;
