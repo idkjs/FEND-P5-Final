@@ -1,55 +1,108 @@
-* {
-  box-sizing: border-box;
+body {
+  background: #FCD60B;
+  color: black;
+  padding-top: 20px;
 }
 
-html,
-body {
-  height: 100%;
-  margin: 0;
-  padding: 0;
+h1 {
+  font-size: 20px;
+}
+
+h3 {
+  font-size: 16px;
 }
 
 #map {
-  height: 100%;
-  width: 80%;
-  right: 20px;
+    width: 100%;
+    height: 100vh;
+    top:0;
+    bottom: 0;
 }
-
-#test-input {
-  top: 40px;
-  right: 20px;
-  bottom: 30%;
-  height: 40px;
-  width: 200px;
-  font-size: 20px;
-}
-/* # is an id selector, . is a class selector*/
 
 #list-view {
-  /*position: fixed;*/
-  top: 0px;
-  right: 20px;
-  width: 100px;
-  background-color: #fff;
-  margin: 0;
+    max-height: 25vh;
+    overflow-y:scroll; 
+}
+
+.site-header {
+  margin-bottom: 1em;
+  border-bottom: 5px solid #000000;
+    padding: 0px;
+  background: #F9C606;
+}
+
+.main-nav {
+  list-style: none;
   padding: 0;
 }
 
-/*.controls {
-    margin-top: 16px;
-    border: 1px solid transparent;
-    border-radius: 2px 0 0 2px;
-    box-sizing: border-box;
-    -moz-box-sizing: border-box;
-    height: 32px;
-    outline: none;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+.main-nav-item {
+  display: inline-block;
+  font-size: 1em;
+  border-bottom: none;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 49%;
 }
-*/
-li {
-  margin-left: 20px;
-  padding: 2px 0;
-  font: 12px sans-serif;
-  width: 100px;
-  height: 31px;
+
+.main-nav-item:hover {
+  background: #F9C606;
+  cursor: pointer;
+}
+
+@media only screen and (min-width: 768px) {
+  .main-nav {
+    padding-bottom: 5em;
+  }
+  .main-nav-item {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 33.33%;
+  }
+  #list-view {
+    max-height: 25vh;
+    overflow-y:scroll; 
+}
+
+
+@media only screen and (min-width: 992px) {
+  #map {
+      height: 100vh;
+  }
+
+  h1 {
+    font-size: 36px;
+  }
+
+  h3 {
+    font-size: 24px;
+  }
+
+  .site-header {
+      padding: 0px 0px 0px 0px;
+    margin-bottom: 2em;
+  }
+
+  .main-nav {
+    padding-bottom: 2em;
+  }
+
+  .main-nav-item {
+    display: block;
+    font-size: 1.2em;
+    line-height: 2em;
+    border-bottom: 1px solid #000000;
+    white-space: normal;
+    overflow: hidden;
+    width: 100%;
+  }
+
+  .section-content {
+    padding: 0;
+  }
+
+  #list-view {
+    max-height: 100vh;
+    overflow-y:scroll; 
 }

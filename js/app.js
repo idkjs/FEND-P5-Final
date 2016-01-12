@@ -3,7 +3,7 @@ var vm;
 var viewModel = function () {
   
   var self = this;
-  var map = this.map;
+
   // non-observable array to show objects coming from Firebase DB.
   self.placeArray = [];
   
@@ -13,18 +13,24 @@ var viewModel = function () {
   // get data from Pages Jaunes Haiti database, push to placeArray []
   var ref = new Firebase("https://crackling-fire-1105.firebaseio.com/business");
 
-  // get data from firebase.
+  // get data from firebase to build markers, infowindows, etc.
   function searchbiz() {
   ref.orderByChild("city").equalTo("Pétion-Ville").on("child_added", function(snapshot) {
       if (snapshot.val().hasOwnProperty('name') && snapshot.val().hasOwnProperty('latitude')) {
            var place = { accountid: snapshot.val().accountid, name: snapshot.val().name,
                    latLng: {lat: snapshot.val().latitude, lng: snapshot.val().longitude},
+                   heading: snapshot.val().heading,
+                   address: snapshot.val().address,
+                   city: snapshot.val().city,
+                   phoneNumber: snapshot.val().phonenumber1,
+                   website: snapshot.val().website,
                  };
           //push data to array placeArray
           self.placeArray.push(new Place(place));       
           //push data to observable array placeList
           self.placeList.push(place);
       }
+      
   // Attach an asynchronous callback to read the data at our posts reference
     }, function (errorObject) {
     console.log("The read failed: " + errorObject.code);
@@ -37,15 +43,15 @@ var viewModel = function () {
   // https://developers.google.com/maps/documentation/javascript/markers
 
  function Marker(place) {
-    var map = document.getElementById ('map');
     place.marker = new google.maps.Marker({
       accountid: place.accountid,
-      setMap: map,
+      map: map,
       name: place.name,
       position: place.latLng,
-      animation: google.maps.Animation.DROP
+      animation: google.maps.Animation.DROP,
     });
 
+    // listens for click to make location marker bounce.
     place.marker.addListener('click', toggleBounce);
     function toggleBounce() {
       if (place.marker.getAnimation() !== null) {
@@ -54,20 +60,24 @@ var viewModel = function () {
       place.marker.setAnimation(google.maps.Animation.BOUNCE);
       }
     }
-     
-    var contentString = '<div>' + place.name + '</div>';
+    
+    //This creates content for location infowindows and control infowindow action. 
+    var contentString = '<div><strong>' + place.name + '</strong><br>' + place.heading + '<br>' + place.address + '<br>'+ place.city + '<br>'+ place.phoneNumber + '<br>' + '<a href="'+place.website+'">' + place.website + '</a></div>';
     google.maps.event.addListener(place.marker, 'click', function() {      
       infowindow.setContent(contentString);      
-      infowindow.open(self.mapCanvas, this);
+      infowindow.open(map, this);
       place.marker.setAnimation(google.maps.Animation.BOUNCE);
       setTimeout(function(){place.marker.setAnimation(null);}, 1450);
     });
     return place.marker;
   };
 
+  //this tracker search field input
   self.userInput = ko.observable(''); 
 
+  //this function searchs location names and categories for search terms
   self.search = function() {
+  
   // remove all the current locations, which removes them from the view
   // set results of search to variable and make lowercase so that
   // it can be used to search the array. Be sure to use the 
@@ -75,12 +85,27 @@ var viewModel = function () {
     var searchInput = self.userInput().toLowerCase();
 
     self.placeList.removeAll();
-
+    self.placeList().forEach(function(place)  {
+      infowindow.close(map, this);
+    });
     self.placeArray.forEach(function(place) {
       place.marker.setVisible(false);
-    
-      if(place.name.toLowerCase().indexOf(searchInput) >= 0) {
+      var headingIndex = place.heading.toLowerCase().indexOf(searchInput);
+      var nameIndex = place.name.toLowerCase().indexOf(searchInput);
+      this.noResults = document.getElementById("noResults");
+
+      if(headingIndex >= 0) {
         self.placeList.push(place);
+
+      } else
+
+      if(nameIndex >= 0) {
+        self.placeList.push(place);
+      }  else
+
+      if(nameIndex == 0 && headingIndex == 0) {
+        this.noResults.innerHTML = "Try another search.";
+        console.log(noResults.innerHTML)
       }
     });
      
@@ -89,18 +114,39 @@ var viewModel = function () {
     });     
   };
 
+  // this function creates each individual place from the firebase location data
   function Place(data) {
     this.accountid = data.accountid;
     this.name = data.name;
     this.latLng = data.latLng;
     this.marker = Marker(data);
-    this.contentString = '<div><strong>' + this.name + '</strong></div>';
+    this.heading = data.heading;
+    this.phoneNumber = data.phonenumber1;
+    this.website = data.website;
   }
 
+  // this binds the list results to their map markers.
   bounceUp = function(place) {
       google.maps.event.trigger(place.marker, 'click');
       console.log(place.marker);
   }
+
+  // this a quick search function to show all hotels.
+  showHotels = function () {
+    getInfoWindowEvent();
+    self.userInput('hotel');
+    self.search();
+    self.userInput('');
+  }
+
+  // this a quick search function to show all restaurants.
+  showRestaurants = function () {
+    getInfoWindowEvent();
+    self.userInput('restaurants');
+    self.search();
+    self.userInput('');
+  }
+
 };
 
 vm = new viewModel();
