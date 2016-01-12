@@ -1,3 +1,4 @@
+
 var vm;
 
 var viewModel = function () {
@@ -75,6 +76,7 @@ var viewModel = function () {
   //this tracker search field input
   self.userInput = ko.observable(''); 
 
+  // noResults: ko.observable('');
   //this function searchs location names and categories for search terms
   self.search = function() {
   
@@ -92,7 +94,7 @@ var viewModel = function () {
       place.marker.setVisible(false);
       var headingIndex = place.heading.toLowerCase().indexOf(searchInput);
       var nameIndex = place.name.toLowerCase().indexOf(searchInput);
-      this.noResults = document.getElementById("noResults");
+      // this.noResults = document.getElementById("noResults");
 
       if(headingIndex >= 0) {
         self.placeList.push(place);
@@ -101,11 +103,6 @@ var viewModel = function () {
 
       if(nameIndex >= 0) {
         self.placeList.push(place);
-      }  else
-
-      if(nameIndex == 0 && headingIndex == 0) {
-        this.noResults.innerHTML = "Try another search.";
-        console.log(noResults.innerHTML)
       }
     });
      
