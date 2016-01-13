@@ -5,11 +5,18 @@ var viewModel = function () {
   
   var self = this;
 
+  checkGoogle();
+
   // non-observable array to show objects coming from Firebase DB.
   self.placeArray = [];
   
   // observable data object to make objects show object coming from Firebase 
   self.placeList = ko.observableArray();
+
+  // hard code six locations
+  // localPlaces.forEach(function(place) {
+  //   self.placeArray.push( new Place(place));
+  // });
 
   // get data from Pages Jaunes Haiti database, push to placeArray []
   var ref = new Firebase("https://crackling-fire-1105.firebaseio.com/business");
@@ -148,7 +155,7 @@ var viewModel = function () {
 
 vm = new viewModel();
 
-ko.applyBindings(vm);
+// ko.applyBindings(vm);
 
 
 
