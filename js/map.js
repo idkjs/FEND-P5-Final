@@ -3,15 +3,14 @@
 // 'var' before map in initialize() so it would be available globally. I dont know what problems this might create later.
 
 function initialize() {
-	var mapCanvas = document.getElementById('map');
+    var mapCanvas = document.getElementById('map');
     var mapOptions = {
-    	center: new google.maps.LatLng(18.5128958, -72.2939841),
-    	zoom: 15,
-    	mapTypeId: google.maps.MapTypeId.ROADMAP
+        center: new google.maps.LatLng(18.5128958, -72.2939841),
+        zoom: 15,
+        mapTypeId: google.maps.MapTypeId.ROADMAP
     }
     infowindow = new google.maps.InfoWindow();
     map = new google.maps.Map(mapCanvas, mapOptions);
-
 }
 
 function checkGoogle() {
