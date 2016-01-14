@@ -13,11 +13,6 @@ var viewModel = function () {
   // observable data object to make objects show object coming from Firebase 
   self.placeList = ko.observableArray();
 
-  // hard code six locations
-  // localPlaces.forEach(function(place) {
-  //   self.placeArray.push( new Place(place));
-  // });
-
   // get data from Pages Jaunes Haiti database, push to placeArray []
   var ref = new Firebase("https://crackling-fire-1105.firebaseio.com/business");
 
@@ -32,6 +27,14 @@ var viewModel = function () {
                    city: snapshot.val().city,
                    phoneNumber: snapshot.val().phonenumber1,
                    website: snapshot.val().website,
+                   icon:  function () {
+                          if (snapshot.val().heading == "Hotels") {
+                            icon = "img/Hotel.png";
+                          } else 
+                          if(snapshot.val().heading == "Restaurants") {
+                            icon = 'img/Restaurant.png';
+                          }
+                        }
                  };
           //push data to array placeArray
           self.placeArray.push(new Place(place));       
@@ -45,11 +48,18 @@ var viewModel = function () {
     });
   }
   searchbiz();
+
+    // hard code six locations
+  localPlaces.forEach(function(place) {
+    console.log(localPlaces.name);
+    self.placeArray.push( new Place(place));
+  });
+
   
   // Create a marker for each Place via the google maps api. The call takes a latlng and map id property at least.
   // Adds click event listener, animation and infowindow data
   // https://developers.google.com/maps/documentation/javascript/markers
-
+ 
  function Marker(place) {
     place.marker = new google.maps.Marker({
       accountid: place.accountid,
@@ -57,7 +67,9 @@ var viewModel = function () {
       name: place.name,
       position: place.latLng,
       animation: google.maps.Animation.DROP,
+      // icon: selectIcon(place.heading)
     });
+
 
     // listens for click to make location marker bounce.
     place.marker.addListener('click', toggleBounce);
