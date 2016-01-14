@@ -13,3 +13,4 @@ https://stackoverflow.com
 https://firebase.com
 https://bootstrap.com
 https://discussions.udacity.com/t/handling-google-maps-in-async-and-fallback/34282
+https://github.com/IronSummitMedia/startbootstrap-simple-sidebar
