@@ -5,7 +5,7 @@ var viewModel = function () {
   
   var self = this;
 
-  checkGoogle();
+  // checkGoogle();
 
   // non-observable array to show objects coming from Firebase DB.
   self.placeArray = [];
@@ -27,15 +27,7 @@ var viewModel = function () {
                    city: snapshot.val().city,
                    phoneNumber: snapshot.val().phonenumber1,
                    website: snapshot.val().website,
-                   icon:  function () {
-                          if (snapshot.val().heading == "Hotels") {
-                            icon = "img/Hotel.png";
-                          } else 
-                          if(snapshot.val().heading == "Restaurants") {
-                            icon = 'img/Restaurant.png';
-                          }
-                        }
-                 };
+                }
           //push data to array placeArray
           self.placeArray.push(new Place(place));       
           //push data to observable array placeList
@@ -50,10 +42,10 @@ var viewModel = function () {
   searchbiz();
 
     // hard code six locations
-  localPlaces.forEach(function(place) {
-    console.log(localPlaces.name);
-    self.placeArray.push( new Place(place));
-  });
+  // localPlaces.forEach(function(place) {
+  //   console.log(localPlaces.name);
+  //   self.placeArray.push( new Place(place));
+  // });
 
   
   // Create a marker for each Place via the google maps api. The call takes a latlng and map id property at least.
@@ -67,8 +59,18 @@ var viewModel = function () {
       name: place.name,
       position: place.latLng,
       animation: google.maps.Animation.DROP,
-      // icon: selectIcon(place.heading)
+      icon:  function () {
+      if (heading == 'Hotels') {
+        return '/img/Hotel.png';
+      } else 
+      if(heading == 'Restaurants') {
+        return '/img/Restaurant.png';
+        }
+      else 
+        return '/img/FF4D00-0.png'
+      }
     });
+    
 
 
     // listens for click to make location marker bounce.
@@ -90,7 +92,7 @@ var viewModel = function () {
       setTimeout(function(){place.marker.setAnimation(null);}, 1450);
     });
     return place.marker;
-  };
+  }
 
   //this tracker search field input
   self.userInput = ko.observable(''); 
@@ -167,7 +169,7 @@ var viewModel = function () {
 
 vm = new viewModel();
 
-// ko.applyBindings(vm);
+ko.applyBindings(vm);
 
 
 

@@ -11,7 +11,9 @@ function initialize() {
     }
     infowindow = new google.maps.InfoWindow();
     map = new google.maps.Map(mapCanvas, mapOptions);
+    
 }
+
 
 function checkGoogle() {
 
