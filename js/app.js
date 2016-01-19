@@ -67,7 +67,7 @@ var viewModel = function () {
         return '/img/Restaurant.png';
         }
       else 
-        return '/img/FF4D00-0.png'
+        return '/img/FF4D00-0.png' //transparent png.
       }
     });
     
