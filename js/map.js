@@ -11,8 +11,13 @@ function initialize() {
     }
     infowindow = new google.maps.InfoWindow();
     map = new google.maps.Map(mapCanvas, mapOptions);
-    
+    google.maps.event.addListenerOnce(map, 'idle', function(){
+    // do something only the first time the map is loaded
+    ko.applyBindings(vm);
+});
+
 }
+
 
 
 function checkGoogle() {
@@ -33,7 +38,7 @@ function checkGoogle() {
 function errorHandling() {
       alert("Google maps failed to load!");
 }
-// creating function to close all open infowindows. The purpose is to address that when you 
+// creating function to close all open infowindows. The purpose is to address that when you
 // open and infowindow, then use one of the preset filters, the infowindow was not closing.
 // By calling getInfoWindowEvent() within the click-binding in the filter button, it closes any open infowindows;
 // source: http://stackoverflow.com/questions/2966744/closing-any-open-info-windows-in-google-maps-api-v3

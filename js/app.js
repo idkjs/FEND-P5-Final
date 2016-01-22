@@ -1,17 +1,87 @@
 
 var vm;
 
-var viewModel = function () {
-  
-  var self = this;
+var localPlaces = [
+  {
+    name: 'MATELEC',
+    latLng: {lat: 18.5157325, lng: -72.2931357},
+    accountid: null,
+    heading: null,
+    phoneNumber: null,
+    website: null
+  },
 
-  // checkGoogle();
+  {
+    name: 'Thompson Electronics S.A.',
+    latLng: {lat: 18.5140218, lng: -72.2919172},
+    accountid: null,
+    heading: null,
+    phoneNumber: null,
+    website: null
+  },
+
+  {
+    name: 'Pages Jaunes Haiti',
+    latLng: {lat: 18.511007, lng: -72.2911917},
+    accountid: null,
+    heading: null,
+    phoneNumber: null,
+    website: null
+    },
+
+  {
+    name: 'Marie de Petion-Ville',
+    latLng: {lat: 18.5098571, lng: -72.2882233},
+    accountid: null,
+    heading: null,
+    phoneNumber: null,
+    website: null
+  },
+
+  {
+    name: 'La Lorraine Boutique Hotel',
+    latLng: {lat: 18.5123482, lng: -72.2918561},
+    accountid: null,
+    heading: null,
+    phoneNumber: null,
+    website: null
+      },
+
+  {
+    name: 'Maison Acra',
+    latLng: {lat: 18.5127402, lng: -72.2886953},
+    accountid: null,
+    heading: null,
+    phoneNumber: null,
+    website: null
+      }
+]
+
+var hardCoded = function(place) {
+
+    this.name = ko.observable(place.name);
+    this.latLng = ko.observable(place.latLng);
+    this.accountid = ko.observable(place.accountid);
+    this.heading = ko.observable(place.heading);
+    this.phoneNumber = ko.observable(place.phoneNumber);
+    this.website = ko.observable(place.website);
+}
+
+
+var viewModel = function () {
+
+  var self = this;
+    // checkGoogle();
 
   // non-observable array to show objects coming from Firebase DB.
   self.placeArray = [];
-  
-  // observable data object to make objects show object coming from Firebase 
+
+  // observable data object to make objects show object coming from Firebase
   self.placeList = ko.observableArray();
+
+  // localPlaces.forEach(function(place){
+  //   self.placeArray.push( new hardCoded(place));
+  // });
 
   // get data from Pages Jaunes Haiti database, push to placeArray []
   var ref = new Firebase("https://crackling-fire-1105.firebaseio.com/business");
@@ -29,49 +99,54 @@ var viewModel = function () {
                    website: snapshot.val().website,
                 }
           //push data to array placeArray
-          self.placeArray.push(new Place(place));       
+          self.placeArray.push(new Place(place));
           //push data to observable array placeList
           self.placeList.push(place);
       }
-      
+
   // Attach an asynchronous callback to read the data at our posts reference
     }, function (errorObject) {
     console.log("The read failed: " + errorObject.code);
     });
+  // localPlaces.forEach(function(place){
+  //   var place = {
+  //     name: place.name,
+  //     latLng: place.latLng,
+  //     accountid: place.accountid,
+  //     heading: place.heading,
+  //     phoneNumber: place.phoneNumber,
+  //     website: place.website
+  //     }
+  //   self.placeArray.push( new Place(place));
+  //   self.placeList.push(place);
+  // });
+
   }
   searchbiz();
 
-    // hard code six locations
-  // localPlaces.forEach(function(place) {
-  //   console.log(localPlaces.name);
-  //   self.placeArray.push( new Place(place));
-  // });
 
-  
   // Create a marker for each Place via the google maps api. The call takes a latlng and map id property at least.
   // Adds click event listener, animation and infowindow data
   // https://developers.google.com/maps/documentation/javascript/markers
- 
+
  function Marker(place) {
     place.marker = new google.maps.Marker({
-      accountid: place.accountid,
+      // accountid: place.accountid,
       map: map,
       name: place.name,
       position: place.latLng,
       animation: google.maps.Animation.DROP,
-      icon:  function () {
-      if (heading == 'Hotels') {
-        return '/img/Hotel.png';
-      } else 
-      if(heading == 'Restaurants') {
-        return '/img/Restaurant.png';
-        }
-      else 
-        return '/img/FF4D00-0.png' //transparent png.
-      }
+      // icon:  function () {
+      // if (heading == 'Hotels') {
+      //   return '/img/Hotel.png';
+      // } else
+      // if(heading == 'Restaurants') {
+      //   return '/img/Restaurant.png';
+      //   }
+      // else
+      //   return '/img/FF4D00-0.png' //transparent png.
+      // }
     });
-    
-
 
     // listens for click to make location marker bounce.
     place.marker.addListener('click', toggleBounce);
@@ -82,11 +157,11 @@ var viewModel = function () {
       place.marker.setAnimation(google.maps.Animation.BOUNCE);
       }
     }
-    
-    //This creates content for location infowindows and control infowindow action. 
+
+    //This creates content for location infowindows and control infowindow action.
     var contentString = '<div><strong>' + place.name + '</strong><br>' + place.heading + '<br>' + place.address + '<br>'+ place.city + '<br>'+ place.phoneNumber + '<br>' + '<a href="'+place.website+'">' + place.website + '</a></div>';
-    google.maps.event.addListener(place.marker, 'click', function() {      
-      infowindow.setContent(contentString);      
+    google.maps.event.addListener(place.marker, 'click', function() {
+      infowindow.setContent(contentString);
       infowindow.open(map, this);
       place.marker.setAnimation(google.maps.Animation.BOUNCE);
       setTimeout(function(){place.marker.setAnimation(null);}, 1450);
@@ -95,15 +170,15 @@ var viewModel = function () {
   }
 
   //this tracker search field input
-  self.userInput = ko.observable(''); 
+  self.userInput = ko.observable('');
 
   // noResults: ko.observable('');
   //this function searchs location names and categories for search terms
   self.search = function() {
-  
+
   // remove all the current locations, which removes them from the view
   // set results of search to variable and make lowercase so that
-  // it can be used to search the array. Be sure to use the 
+  // it can be used to search the array. Be sure to use the
   // KO () indicator after it since userInput is an observable array.
     var searchInput = self.userInput().toLowerCase();
 
@@ -126,10 +201,10 @@ var viewModel = function () {
         self.placeList.push(place);
       }
     });
-     
+
     self.placeList().forEach(function(place) {
       place.marker.setVisible(true);
-    });     
+    });
   };
 
   // this function creates each individual place from the firebase location data
@@ -142,6 +217,10 @@ var viewModel = function () {
     this.phoneNumber = data.phonenumber1;
     this.website = data.website;
   }
+
+  // localPlaces.forEach(function(place){
+  //   self.placeArray.push( new Place(place));
+  // });
 
   // this binds the list results to their map markers.
   bounceUp = function(place) {
@@ -169,7 +248,7 @@ var viewModel = function () {
 
 vm = new viewModel();
 
-ko.applyBindings(vm);
+// ko.applyBindings(vm);
 
 
 
