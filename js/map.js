@@ -18,22 +18,6 @@ function initialize() {
 
 }
 
-
-
-function checkGoogle() {
-
-        if (typeof google !== 'undefined') {
-
-        console.log("Google is ready!");
-        ko.applyBindings(vm);
-
-        } else {
-
-        console.log("Google not ready!");
-        window.setTimeout("checkGoogle();",100)
-        }
-
-    }
 // google.maps.event.addDomListener(window, 'load', initialize);
 function errorHandling() {
       alert("Google maps failed to load!");
