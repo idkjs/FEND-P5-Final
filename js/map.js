@@ -13,7 +13,7 @@ function initialize() {
     map = new google.maps.Map(mapCanvas, mapOptions);
     google.maps.event.addListenerOnce(map, 'idle', function(){
     // do something only the first time the map is loaded
-    ko.applyBindings(vm);
+    app();
 });
 
 }

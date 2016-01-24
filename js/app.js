@@ -1,4 +1,4 @@
-
+function app(){
 var vm;
 
 var localPlaces = [
@@ -108,18 +108,18 @@ var viewModel = function () {
     }, function (errorObject) {
     console.log("The read failed: " + errorObject.code);
     });
-  // localPlaces.forEach(function(place){
-  //   var place = {
-  //     name: place.name,
-  //     latLng: place.latLng,
-  //     accountid: place.accountid,
-  //     heading: place.heading,
-  //     phoneNumber: place.phoneNumber,
-  //     website: place.website
-  //     }
-  //   self.placeArray.push( new Place(place));
-  //   self.placeList.push(place);
-  // });
+  localPlaces.forEach(function(place){
+    var place = {
+      name: place.name,
+      latLng: place.latLng,
+      accountid: place.accountid,
+      heading: place.heading,
+      phoneNumber: place.phoneNumber,
+      website: place.website
+      }
+    self.placeArray.push( new Place(place));
+    self.placeList.push(place);
+  });
 
   }
   searchbiz();
@@ -248,8 +248,8 @@ var viewModel = function () {
 
 vm = new viewModel();
 
-// ko.applyBindings(vm);
-
+ko.applyBindings(vm);
+}
 
 
 
