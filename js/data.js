@@ -61,18 +61,20 @@ console.log(localPlaces.length);
 var ref = new Firebase("https://crackling-fire-1105.firebaseio.com/business");
 
 getData('https://crackling-fire-1105.firebaseio.com/business', writeData);
-
+var locations = [];
 function getData(dataURI, callback) {
+  var myData = [];
   var myData = ref.orderByChild("city").equalTo("Pétion-Ville").on("child_added", function(snapshot) {
-    if (snapshot.val().hasOwnProperty('name') && snapshot.val().hasOwnProperty('latitude')) {
-         var place = { accountid: snapshot.val().accountid, name: snapshot.val().name,
-                 latLng: {lat: snapshot.val().latitude, lng: snapshot.val().longitude},
-                 heading: snapshot.val().heading,
-                 address: snapshot.val().address,
-                 city: snapshot.val().city,
-                 phoneNumber: snapshot.val().phonenumber1,
-                 website: snapshot.val().website,
-              }
+    if (snapshot.val().hasOwnProperty('name') && snapshot.val().hasOwnProperty('latitude'));
+     // {
+     //     var place = { accountid: snapshot.val().accountid, name: snapshot.val().name,
+     //             latLng: {lat: snapshot.val().latitude, lng: snapshot.val().longitude},
+     //             heading: snapshot.val().heading,
+     //             address: snapshot.val().address,
+     //             city: snapshot.val().city,
+     //             phoneNumber: snapshot.val().phonenumber1,
+     //             website: snapshot.val().website,
+     //          }
         //push data to array localPlaces
         // console.log(place);
         localPlaces.push(place);
@@ -86,9 +88,18 @@ function getData(dataURI, callback) {
   callback(myData);
   }
 
-  function writeData(myData, callback) {
-    localPlaces.push(myData);
-    startApp();
+  function writeData(myData) {
+    return myData.map(function(place) { return { accountid: place.accountid, name: place.name,
+                 latLng: {lat: place.latitude, lng: place.longitude},
+                 heading: place.heading,
+                 address: place.address,
+                 city: place.city,
+                 phoneNumber: place.phonenumber1,
+                 website: place.website
+              });
+    // localPlaces.push(myData);
+    // startApp();
+    console.log(myData.map);
   }
 
   function startApp() {
@@ -101,39 +112,39 @@ function getData(dataURI, callback) {
   }
 }
 
-// // get data from firebase to build markers, infowindows, etc.
-// function searchbiz() {
-// ref.orderByChild("city").equalTo("Pétion-Ville").on("child_added", function(snapshot) {
-//     if (snapshot.val().hasOwnProperty('name') && snapshot.val().hasOwnProperty('latitude')) {
-//          var place = { accountid: snapshot.val().accountid, name: snapshot.val().name,
-//                  latLng: {lat: snapshot.val().latitude, lng: snapshot.val().longitude},
-//                  heading: snapshot.val().heading,
-//                  address: snapshot.val().address,
-//                  city: snapshot.val().city,
-//                  phoneNumber: snapshot.val().phonenumber1,
-//                  website: snapshot.val().website,
-//               }
-//         //push data to array localPlaces
-//         console.log(place);
-//         localPlaces.push(place);
-//         console.log(localPlaces.length);
+// get data from firebase to build markers, infowindows, etc.
+function searchbiz() {
+ref.orderByChild("city").equalTo("Pétion-Ville").on("child_added", function(snapshot) {
+    if (snapshot.val().hasOwnProperty('name') && snapshot.val().hasOwnProperty('latitude')) {
+         var place = { accountid: snapshot.val().accountid, name: snapshot.val().name,
+                 latLng: {lat: snapshot.val().latitude, lng: snapshot.val().longitude},
+                 heading: snapshot.val().heading,
+                 address: snapshot.val().address,
+                 city: snapshot.val().city,
+                 phoneNumber: snapshot.val().phonenumber1,
+                 website: snapshot.val().website,
+              }
+        //push data to array localPlaces
+        console.log(place);
+        localPlaces.push(place);
+        console.log(localPlaces.length);
 
-//     }
+    }
 
-// // Attach an asynchronous callback to read the data at our posts reference
-//     }, function (errorObject) {
-//     console.log("The read failed: " + errorObject.code);
-//   });
-// }
+// Attach an asynchronous callback to read the data at our posts reference
+    }, function (errorObject) {
+    console.log("The read failed: " + errorObject.code);
+  });
+}
 
-// function getData(searchbiz, callback) {
-//     var dataArray = [123, 456, 789, 012, 345, 678];
-//     callback(dataArray);
-// }
+function getData(searchbiz, callback) {
+    var dataArray = [123, 456, 789, 012, 345, 678];
+    callback(dataArray);
+}
 
-// function writeData(myData) {
-//     document.getElementById('output').innerHTML += myData;
-// }
-// console.log(localPlaces.length);
-// console.log(localPlaces);
+function writeData(myData) {
+    document.getElementById('output').innerHTML += myData;
+}
+console.log(localPlaces.length);
+console.log(localPlaces);
 
