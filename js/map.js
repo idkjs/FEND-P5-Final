@@ -2,7 +2,7 @@
 // I had a hard time getting the markers to show. I ended up defining "map" globally by taking out
 // 'var' before map in initialize() so it would be available globally. I dont know what problems this might create later.
 
-function initialize() {
+function init() {
     var mapCanvas = document.getElementById('map');
     var mapOptions = {
         center: new google.maps.LatLng(18.5128958, -72.2939841),
@@ -11,17 +11,28 @@ function initialize() {
     }
     infowindow = new google.maps.InfoWindow();
     map = new google.maps.Map(mapCanvas, mapOptions);
-    google.maps.event.addListenerOnce(map, 'idle', function(){
-    // do something only the first time the map is loaded
-    app();
-});
-
-}
-
-// google.maps.event.addDomListener(window, 'load', initialize);
-function errorHandling() {
+    function errorHandling() {
       alert("Google maps failed to load!");
+    }
+    startApp();
+};
+console.log('Init Ran');
+function startApp() {
+    console.log('startApp is running.')
+    google.maps.event.addListenerOnce(this.map, 'idle', function(){
+    // do something only the first time the map is loaded
+    console.log('Map is idle.');
+    app();
+    })
 }
+
+
+// }
+
+// // google.maps.event.addDomListener(window, 'load', initialize);
+// function errorHandling() {
+//       alert("Google maps failed to load!");
+// }
 // creating function to close all open infowindows. The purpose is to address that when you
 // open and infowindow, then use one of the preset filters, the infowindow was not closing.
 // By calling getInfoWindowEvent() within the click-binding in the filter button, it closes any open infowindows;

@@ -57,152 +57,107 @@ var localPlaces = [
       }
 ]
 
+var locations = [];
+// Get Data from FIREBASE
+var fb = new Firebase("https://crackling-fire-1105.firebaseio.com/business");
 
-
-var viewModel = function () {
-
-  var self = this;
-
-  // non-observable array to show objects coming from Firebase DB.
-  self.placeArray = [];
-
-  // observable data object to make objects show object coming from Firebase
-  self.placeList = ko.observableArray();
-
-  // get data from Pages Jaunes Haiti database, push to placeArray []
-  var ref = new Firebase("https://crackling-fire-1105.firebaseio.com/business");
-
-  // get data from firebase to build markers, infowindows, etc.
-  function searchbiz() {
-  ref.orderByChild("city").equalTo("Pétion-Ville").on("child_added", function(snapshot) {
-      if (snapshot.val().hasOwnProperty('name') && snapshot.val().hasOwnProperty('latitude')) {
-           var place = { accountid: snapshot.val().accountid, name: snapshot.val().name,
-                   latLng: {lat: snapshot.val().latitude, lng: snapshot.val().longitude},
-                   heading: snapshot.val().heading,
-                   address: snapshot.val().address,
-                   city: snapshot.val().city,
-                   phoneNumber: snapshot.val().phonenumber1,
-                   website: snapshot.val().website,
-                }
-          //push data to array placeArray
-          self.placeArray.push(new Place(place));
-          //push data to observable array placeList
-          self.placeList.push(place);
-      }
-
-  // Attach an asynchronous callback to read the data at our posts reference
-    }, function (errorObject) {
-    console.log("The read failed: " + errorObject.code);
+// Retrieve relevant data
+fb.orderByChild("city").equalTo("Pétion-Ville").on("child_added", function(snapshot) {
+  var place = snapshot.val();
+  if (place.hasOwnProperty('name') && place.hasOwnProperty('latitude'))
+    {
+    // Marker(place);
+    locations.push( new Place(place));
+    console.log(place);
+    console.log(locations.length);
+    // viewModel();
+    };
+  localPlaces.forEach(function(place) {
+      locations.push(place);
     });
-  // function loadLocalData() {
-    localPlaces.forEach(function(place){
-      var place = {
-      name: place.name,
-      latLng: place.latLng,
-      accountid: place.accountid,
-      heading: place.heading,
-      phoneNumber: place.phoneNumber,
-      website: place.website
-     }
-    self.placeArray.push( new Place(place));
-    self.placeList.push(place);
-    console.log(self.placeArray.length);
-    })
-  // }
-  console.log(self.placeArray.length);
+  }, function (errorObject) {
+    console.log("The read failed: " + errorObject.code);
+});
 
+// this function creates each individual place from the firebase location data
+function Place(place) {
+  this.accountid = place.accountid;
+  this.name = place.name;
+  this.latLng = place.latLng;
+  this.marker = Marker(place);
+  this.heading = place.heading;
+  this.phoneNumber = place.phonenumber1;
+  this.website = place.website;
 }
-searchbiz();
 
   // Create a marker for each Place via the google maps api. The call takes a latlng and map id property at least.
   // Adds click event listener, animation and infowindow data
   // https://developers.google.com/maps/documentation/javascript/markers
 
- function Marker(place) {
-    place.marker = new google.maps.Marker({
-      accountid: place.accountid,
-      map: map,
-      name: place.name,
-      position: place.latLng,
-      animation: google.maps.Animation.DROP,
-      // icon:  function () {
-      // if (heading == 'Hotels') {
-      //   return '/img/Hotel.png';
-      // } else
-      // if(heading == 'Restaurants') {
-      //   return '/img/Restaurant.png';
-      //   }
-      // else
-      //   return '/img/FF4D00-0.png' //transparent png.
-      // }
-    });
+function Marker(place) {
+  place.marker = new google.maps.Marker({
+    accountid: place.accountid,
+    map: map,
+    name: place.name,
+    position: place.latLng,
+    animation: google.maps.Animation.DROP
+  });
+  // console.log(map);
 
-    // listens for click to make location marker bounce.
-    place.marker.addListener('click', toggleBounce);
-    function toggleBounce() {
-      if (place.marker.getAnimation() !== null) {
-      place.marker.setAnimation(null);
-      } else {
-      place.marker.setAnimation(google.maps.Animation.BOUNCE);
-      }
+  // listens for click to make location marker bounce.
+  place.marker.addListener('click', toggleBounce);
+  function toggleBounce() {
+    if (place.marker.getAnimation() !== null) {
+    place.marker.setAnimation(null);
+    } else {
+    place.marker.setAnimation(google.maps.Animation.BOUNCE);
     }
-
-    //This creates content for location infowindows and control infowindow action.
-    var contentString = '<div><strong>' + place.name + '</strong><br>' + place.heading + '<br>' + place.address + '<br>'+ place.city + '<br>'+ place.phoneNumber + '<br>' + '<a href="'+place.website+'">' + place.website + '</a></div>';
-    google.maps.event.addListener(place.marker, 'click', function() {
-      infowindow.setContent(contentString);
-      infowindow.open(map, this);
-      place.marker.setAnimation(google.maps.Animation.BOUNCE);
-      setTimeout(function(){place.marker.setAnimation(null);}, 1450);
-    });
-    return place.marker;
   }
 
+  //This creates content for location infowindows and control infowindow action.
+  var contentString = '<div><strong>' + place.name + '</strong><br>' + place.heading + '<br>' + place.address + '<br>'+ place.city + '<br>'+ place.phoneNumber + '<br>' + '<a href="'+place.website+'">' + place.website + '</a></div>';
+  google.maps.event.addListener(place.marker, 'click', function() {
+    infowindow.setContent(contentString);
+    infowindow.open(map, this);
+    place.marker.setAnimation(google.maps.Animation.BOUNCE);
+    setTimeout(function(){place.marker.setAnimation(null);}, 1450);
+  });
+  // console.log(place.marker);
+}
+
+var viewModel = function () {
+
+  var self = this;
+
+  // observable data object to make objects show object coming from Firebase
+  self.placeList = ko.observable();
+
+  locations.forEach(function(place) {
+    self.placeList.push(place);
+
+  });
+  console.log(self.placeList());
   //this tracks search field input
   self.userInput = ko.observable('');
 
   //this function searchs location names and categories for search terms
   self.search = function() {
 
-  // remove all the current locations, which removes them from the view
-  // set results of search to variable and make lowercase so that
-  // it can be used to search the array. Be sure to use the
-  // KO () indicator after it since userInput is an observable array.
     var searchInput = self.userInput().toLowerCase();
 
-    self.placeList.removeAll();
-    self.placeList().forEach(function(place)  {
-      infowindow.close(map, this);
-    });
-    self.placeArray.forEach(function(place) {
-      place.marker.setVisible(false);
+    locations.forEach(function(place) {
       var headingIndex = place.heading.toLowerCase().indexOf(searchInput);
       var nameIndex = place.name.toLowerCase().indexOf(searchInput);
 
-      if(headingIndex >= 0) {
+      if(headingIndex >= 0 || nameIndex >= 0) {
+        if (place.marker.setVisible !== true) {
+        place.marker.setVisible(true);
+        }
         self.placeList.push(place);
+        }
+          // console.log('self.placeList now has %d items', self.placeList().length);
 
-      } else
-
-      if(nameIndex >= 0) {
-        self.placeList.push(place);
-      }
-    });
-
-    self.placeList().forEach(function(place) {
-      place.marker.setVisible(true);
-    });
-  };
-
-  // this function creates each individual place from the firebase location data
-  function Place(data) {
-    this.accountid = data.accountid;
-    this.name = data.name;
-    this.latLng = data.latLng;
-    this.marker = Marker(data);
-    this.heading = data.heading;
-    this.phoneNumber = data.phonenumber1;
-    this.website = data.website;
+    })
   }
 
   // this binds the list results to their map markers.

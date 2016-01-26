@@ -58,13 +58,17 @@ console.log(localPlaces.length);
 
 
 // get data from Pages Jaunes Haiti database, push to localPlaces []
+var fb = new Firebase("https://crackling-fire-1105.firebaseio.com/business");
+
+var index = new FirebaseIndex(fb.orderByChild("city").equalTo("Pétion-Ville").on("child_added", function(snapshot) {
+    if (snapshot.val().hasOwnProperty('name') && snapshot.val().hasOwnProperty('latitude')), fb.child('business')));
+
 var ref = new Firebase("https://crackling-fire-1105.firebaseio.com/business");
 
 getData('https://crackling-fire-1105.firebaseio.com/business', writeData);
 
 function getData(dataURI, callback) {
-  var myData = ref.orderByChild("city").equalTo("Pétion-Ville").on("child_added", function(snapshot) {
-    if (snapshot.val().hasOwnProperty('name') && snapshot.val().hasOwnProperty('latitude')) {
+  var myData = ref.orderByChild("city").equalTo("Pétion-Ville").on("child_added", {
          var place = { accountid: snapshot.val().accountid, name: snapshot.val().name,
                  latLng: {lat: snapshot.val().latitude, lng: snapshot.val().longitude},
                  heading: snapshot.val().heading,
